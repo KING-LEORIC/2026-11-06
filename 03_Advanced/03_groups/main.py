@@ -14,7 +14,7 @@ m=pd.read_csv(BASE.parent/"data/manifest.csv")
 # test 데이터를 제외하고 train/val 대상 개발 데이터만 추출
 # 개발 데이터에 포함된 모든 그룹 ID를 정렬하여 추출
 dev=m[m.split!="test"].copy();groups=sorted(dev.group_id.unique())
-
+"""동일한 그룹(group_id)에 속한 이미지가 train과 validation에 동시에 들어가지 않도록 그룹 단위로 데이터를 분할하는 방법을 확인하는 실습"""
 # 전체 그룹의 75% 지점을 train/val 분리 경계로 계산
 cut=int(len(groups)*.75)
 # >>> C03
@@ -38,3 +38,8 @@ print("그룹 분할의 중복 그룹:",int((dev.groupby("group_id").new_split.n
 print("이미지 번갈아 분할의 중복 그룹:",int((dev.groupby("group_id").image_split.nunique()>1).sum()))
 # 결과를 CSV 파일로 저장
 dev.to_csv(out/"split_demo.csv",index=False)
+"""
+그룹 정보를 고려하지 않고 이미지를 개별적으로 train/validation에 나누면 동일 그룹의 데이터가 서로 다른 분할에 포함될 수 있어 데이터 누수(Data Leakage)가 발생한다.
+반면 group_id 단위로 train과 validation을 분리하면 하나의 그룹이 하나의 분할에만 속하게 되어 평가 결과의 신뢰성을 높일 수 있다.
+따라서 유사 데이터가 그룹으로 묶여 있는 경우에는 반드시 그룹 기반 분할(Group-wise Split)을 적용해야 한다.
+"""
