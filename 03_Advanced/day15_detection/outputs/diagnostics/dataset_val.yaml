@@ -1,0 +1,9 @@
+
+path: "C:/workspace/2026-11-06/03_Advanced/day15_detection/data"
+train: images/train
+val: images/val
+test: images/test
+names:
+  0: square
+  1: circle
+  2: triangle
